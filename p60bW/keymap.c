@@ -191,10 +191,9 @@ bool led_update_user(led_t led_state) {
     return false;
 }
 
-// Override keys
-const key_override_t delete_key_override = 
-    ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
-const key_override_t **key_overrides = (const key_override_t *[]){
-	&delete_key_override,
-	NULL
+const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
+
+// This globally defines all key overrides to be used
+const key_override_t *key_overrides[] = {
+	&delete_key_override
 };
