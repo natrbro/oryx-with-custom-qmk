@@ -184,7 +184,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 
 
+// Custom QMK stuff below
+
 // Ignore OS caps lock stuff because it is probably causing that lag
 bool led_update_user(led_t led_state) {
     return false;
 }
+
+// Override keys
+const key_override_t delete_key_override = 
+    ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
+const key_override_t **key_overrides = (const key_override_t *[]){
+	&delete_key_override,
+	NULL
+};
