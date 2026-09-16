@@ -151,6 +151,13 @@ bool rgb_matrix_indicators_user(void) {
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (!record->event.pressed && (keycode == KC_LSFT || keycode == KC_RSFT)) {
+    if (get_mods() & MOD_BIT(keycode)) {
+      del_mods(MOD_BIT(keycode));
+      send_keyboard_report();
+    }
+  }
+
   switch (keycode) {
   case QK_MODS ... QK_MODS_MAX:
     // Mouse and consumer keys (volume, media) with modifiers work inconsistently across operating systems,
@@ -197,3 +204,48 @@ const key_override_t delete_key_override = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC
 const key_override_t *key_overrides[] = {
 	&delete_key_override
 };
+
+void caps_word_set_user(bool active) {
+    if (active) {
+        del_mods(MOD_MASK_SHIFT);
+        unregister_mods(MOD_MASK_SHIFT);
+    }
+}
+
+bool caps_word_press_user(uint16_t keycode) {
+    switch (keycode) {
+        // Keycodes that continue Caps Word, with shift applied:
+        case KC_A ... KC_Z:
+            add_weak_mods(MOD_BIT(KC_LSFT));
+            return true;
+
+        // Keycodes that continue Caps Word, without shifting:
+        case KC_1 ... KC_0:
+        case KC_BSPC:
+        case KC_DEL:
+        case KC_MINS:
+        case KC_UNDS:
+        case KC_SLASH:
+        case KC_DOT:
+        case KC_COMM:
+        case KC_SCLN:
+        case KC_QUOTE:
+        case KC_EQUAL:
+        case KC_PLUS:
+        case KC_GRAVE:
+        case KC_BSLS:
+        case KC_LBRC:
+        case KC_RBRC:
+        case KC_LCBR:
+        case KC_RCBR:
+        case KC_LEFT:
+        case KC_RIGHT:
+        case KC_UP:
+        case KC_DOWN:
+            return true;
+
+        // Any other key (Space, Enter, Esc, etc.) deactivates Caps Word
+        default:
+            return false;
+    }
+}
