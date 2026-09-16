@@ -12,3 +12,4 @@ LAYER_LOCK_ENABLE = yes
 
 # Custom QMK below
 KEY_OVERRIDE_ENABLE = yes
+CAPS_WORD_ENABLE = yes
