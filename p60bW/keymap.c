@@ -159,11 +159,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 
   switch (keycode) {
-  case KC_F24:
-    if (record->event.pressed) {
+  case MT(MOD_LSFT, KC_F24):
+    if (record->tap.count && record->event.pressed) {
       caps_word_toggle();
+      return false;
     }
-    return false;
+    return true;
 
   case QK_MODS ... QK_MODS_MAX:
     // Mouse and consumer keys (volume, media) with modifiers work inconsistently across operating systems,
