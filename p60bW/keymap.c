@@ -150,7 +150,19 @@ bool rgb_matrix_indicators_user(void) {
 
 
 
+static bool shift_held_by_user = false;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (record->tap.count == 0) {
+    if (keycode == KC_LSFT || keycode == KC_RSFT) {
+      shift_held_by_user = record->event.pressed;
+    } else if (keycode >= QK_MOD_TAP && keycode <= QK_MOD_TAP_MAX) {
+      if ((QK_MOD_TAP_GET_MODS(keycode) & 0x0F) == MOD_LSFT) {
+        shift_held_by_user = record->event.pressed;
+      }
+    }
+  }
+
   if (!record->event.pressed && (keycode == KC_LSFT || keycode == KC_RSFT)) {
     if (get_mods() & MOD_BIT(keycode)) {
       del_mods(MOD_BIT(keycode));
@@ -232,24 +244,10 @@ bool caps_word_press_user(uint16_t keycode) {
         case KC_DEL:
         case KC_MINS:
         case KC_UNDS:
-        case KC_SLASH:
-        case KC_DOT:
-        case KC_COMM:
-        case KC_SCLN:
-        case KC_QUOTE:
-        case KC_EQUAL:
-        case KC_PLUS:
-        case KC_GRAVE:
-        case KC_BSLS:
-        case KC_LBRC:
-        case KC_RBRC:
-        case KC_LCBR:
-        case KC_RCBR:
-        case KC_LEFT:
-        case KC_RIGHT:
-        case KC_UP:
-        case KC_DOWN:
             return true;
+        
+        case KC_SLASH:
+            return !shift_held_by_user;
 
         // Any other key (Space, Enter, Esc, etc.) deactivates Caps Word
         default:
